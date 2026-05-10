@@ -1,122 +1,11 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-10T10:32:33.695190+00:00",
+  "generated_at": "2026-05-10T22:20:17.965671+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
-  "total_predictions": 12,
+  "total_predictions": 9,
   "recommended_bets": 1,
   "predictions": [
-    {
-      "home_team": "Hamburger SV",
-      "away_team": "SC Freiburg",
-      "commence_time": "2026-05-10T13:30:00Z",
-      "model_probability": 0.5501020942608085,
-      "dixon_coles_prob": 0.44106485965927567,
-      "xgboost_prob": 0.5820000000000001,
-      "expected_home_goals": 1.1051709180756477,
-      "expected_away_goals": 1.0,
-      "key_features": {
-        "combined_form_btts_rate": 0.65,
-        "home_form_btts_rate": 0.5,
-        "away_form_btts_rate": 0.8,
-        "home_season_avg_goals_for": 1.5,
-        "away_season_avg_goals_against": 1.7058823529411764
-      },
-      "market_odds": {
-        "btts_yes": 1.56,
-        "btts_no": 2.53,
-        "bookmaker": "pinnacle"
-      },
-      "market_probability": 0.6185819070904646,
-      "edge": -0.0684798128296561,
-      "expected_value": null,
-      "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [
-        "min_edge (edge=-6.8%, need 5%)"
-      ],
-      "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
-        "confidence": "LOW"
-      }
-    },
-    {
-      "home_team": "1. FC Köln",
-      "away_team": "1. FC Heidenheim",
-      "commence_time": "2026-05-10T15:30:00Z",
-      "model_probability": 0.5825962177433752,
-      "dixon_coles_prob": 0.44106485965927567,
-      "xgboost_prob": 0.624,
-      "expected_home_goals": 1.1051709180756477,
-      "expected_away_goals": 1.0,
-      "key_features": {
-        "combined_form_btts_rate": 0.7,
-        "home_form_btts_rate": 0.6,
-        "away_form_btts_rate": 0.8,
-        "home_season_avg_goals_for": 0.8235294117647058,
-        "away_season_avg_goals_against": 1.6176470588235294
-      },
-      "market_odds": {
-        "btts_yes": 1.4,
-        "btts_no": 3.15,
-        "bookmaker": "pinnacle"
-      },
-      "market_probability": 0.6923076923076924,
-      "edge": -0.10971147456431718,
-      "expected_value": null,
-      "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [
-        "min_edge (edge=-11.0%, need 5%)"
-      ],
-      "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
-        "confidence": "LOW"
-      }
-    },
-    {
-      "home_team": "FSV Mainz 05",
-      "away_team": "Union Berlin",
-      "commence_time": "2026-05-10T17:30:00Z",
-      "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103924,
-      "xgboost_prob": 0.478,
-      "expected_home_goals": 0.947289358350555,
-      "expected_away_goals": 1.2857142857142858,
-      "key_features": {
-        "combined_form_btts_rate": 0.65,
-        "home_form_btts_rate": 0.8,
-        "away_form_btts_rate": 0.5,
-        "home_season_avg_goals_for": 1.1470588235294117,
-        "away_season_avg_goals_against": 1.5
-      },
-      "market_odds": {
-        "btts_yes": 1.69,
-        "btts_no": 2.25,
-        "bookmaker": "pinnacle"
-      },
-      "market_probability": 0.5710659898477157,
-      "edge": -0.09735653065191635,
-      "expected_value": null,
-      "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
-      ],
-      "gates_failed": [
-        "min_edge (edge=-9.7%, need 5%)"
-      ],
-      "bet_decision": {
-        "should_bet": false,
-        "recommended_stake_pct": 0.0,
-        "confidence": "LOW"
-      }
-    },
     {
       "home_team": "1. FC Heidenheim",
       "away_team": "FSV Mainz 05",
@@ -134,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.37,
-        "btts_no": 2.89,
+        "btts_yes": 1.42,
+        "btts_no": 2.69,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6784037558685446,
-      "edge": -0.09642905760851428,
+      "market_probability": 0.6545012165450123,
+      "edge": -0.07252651828498191,
       "expected_value": null,
       "gates_passed": [
-        "max_ev_cap"
+        "max_ev_cap",
+        "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-9.6%, need 5%)",
-        "min_odds (odds=1.37, min 1.40)"
+        "min_edge (edge=-7.3%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -171,13 +60,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.49,
-        "btts_no": 2.48,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6246851385390428,
-      "edge": 0.07337402727493891,
-      "expected_value": 0.04924431360734155,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.061243245415971925,
+      "expected_value": 0.04194742836710406,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -187,7 +76,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "MEDIUM"
+        "confidence": "LOW"
       }
     },
     {
@@ -207,19 +96,19 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.46,
-        "btts_no": 2.56,
+        "btts_yes": 1.49,
+        "btts_no": 2.48,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6368159203980098,
-      "edge": -0.06590534930380232,
+      "market_probability": 0.6246851385390428,
+      "edge": -0.05377456744483533,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.6%, need 5%)"
+        "min_edge (edge=-5.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -244,19 +133,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.51,
-        "btts_no": 2.42,
+        "btts_yes": 1.57,
+        "btts_no": 2.28,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6157760814249365,
-      "edge": -0.05873825020161705,
+      "market_probability": 0.5922077922077923,
+      "edge": -0.03516996098447289,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-5.9%, need 5%)"
+        "min_edge (edge=-3.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -281,19 +170,19 @@
         "away_season_avg_goals_against": 1.2647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.41,
-        "btts_no": 2.73,
+        "btts_yes": 1.4,
+        "btts_no": 2.77,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6594202898550725,
-      "edge": -0.13871764064991976,
+      "market_probability": 0.6642685851318946,
+      "edge": -0.14356593592674183,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-13.9%, need 5%)"
+        "min_edge (edge=-14.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -318,19 +207,19 @@
         "away_season_avg_goals_against": 1.9411764705882353
       },
       "market_odds": {
-        "btts_yes": 1.37,
-        "btts_no": 2.89,
+        "btts_yes": 1.39,
+        "btts_no": 2.81,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6784037558685446,
-      "edge": 0.009250696503417255,
+      "market_probability": 0.669047619047619,
+      "edge": 0.018606833324342875,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=0.9%, need 5%)",
-        "min_odds (odds=1.37, min 1.40)"
+        "min_edge (edge=1.9%, need 5%)",
+        "min_odds (odds=1.39, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -355,19 +244,19 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.35,
-        "btts_no": 2.98,
+        "btts_yes": 1.3,
+        "btts_no": 3.27,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6882217090069285,
-      "edge": -0.06679938971455213,
+      "market_probability": 0.7155361050328227,
+      "edge": -0.09411378574044638,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-6.7%, need 5%)",
-        "min_odds (odds=1.35, min 1.40)"
+        "min_edge (edge=-9.4%, need 5%)",
+        "min_odds (odds=1.30, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -392,19 +281,19 @@
         "away_season_avg_goals_against": 1.6470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.52,
-        "btts_no": 2.4,
+        "btts_yes": 1.55,
+        "btts_no": 2.32,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6122448979591837,
-      "edge": -0.10092512782380592,
+      "market_probability": 0.599483204134367,
+      "edge": -0.08816343399898918,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-10.1%, need 5%)"
+        "min_edge (edge=-8.8%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -429,19 +318,19 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.62,
+        "btts_yes": 1.38,
+        "btts_no": 2.85,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.645320197044335,
-      "edge": 0.020590019171229046,
+      "market_probability": 0.673758865248227,
+      "edge": -0.007848649032663024,
       "expected_value": null,
       "gates_passed": [
-        "max_ev_cap",
-        "min_odds"
+        "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=2.1%, need 5%)"
+        "min_edge (edge=-0.8%, need 5%)",
+        "min_odds (odds=1.38, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -468,13 +357,13 @@
         "away_season_avg_goals_against": 1.7647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.49,
-        "btts_no": 2.48,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6246851385390428,
-      "edge": 0.07337402727493891,
-      "expected_value": 0.04924431360734155,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.061243245415971925,
+      "expected_value": 0.04194742836710406,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -484,7 +373,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "MEDIUM"
+        "confidence": "LOW"
       }
     }
   ],
