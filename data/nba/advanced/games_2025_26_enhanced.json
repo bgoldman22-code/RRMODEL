@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401871156",
-    "date": "2026-05-13T00:00Z",
+    "gameId": "401871337",
+    "date": "2026-05-14T00:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "126",
-      "record": "62-20"
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "113",
+      "record": "60-22"
     },
     "awayTeam": {
-      "id": "16",
-      "name": "Minnesota Timberwolves",
-      "abbreviation": "MIN",
-      "score": "97",
-      "record": "49-33"
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "117",
+      "record": "52-30"
     },
-    "venue": "Frost Bank Center",
-    "attendance": 19345,
+    "venue": "Little Caesars Arena",
+    "attendance": 20062,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 50,
-      "offRebounds": 11,
-      "defRebounds": 39,
-      "assists": 25,
-      "steals": 9,
-      "blocks": 8,
-      "turnovers": 15,
-      "fouls": 24
+      "rebounds": 40,
+      "offRebounds": 15,
+      "defRebounds": 25,
+      "assists": 28,
+      "steals": 10,
+      "blocks": 10,
+      "turnovers": 10,
+      "fouls": 26
     },
     "awayStats": {
       "fgm": 0,
@@ -42,64 +42,41 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 42,
-      "offRebounds": 10,
-      "defRebounds": 32,
-      "assists": 17,
-      "steals": 7,
-      "blocks": 4,
-      "turnovers": 13,
-      "fouls": 24
+      "rebounds": 44,
+      "offRebounds": 13,
+      "defRebounds": 31,
+      "assists": 25,
+      "steals": 6,
+      "blocks": 9,
+      "turnovers": 16,
+      "fouls": 16
     },
     "highAltitude": false,
     "altitudeAdjustment": 0,
-    "gamePace": 3.5,
-    "homePossessions": 3.5,
-    "awayPossessions": 3.5,
+    "gamePace": -1,
+    "homePossessions": -1,
+    "awayPossessions": -1,
     "homeAdvanced": {
-      "pace": 3.5,
-      "offRtg": 0,
-      "defRtg": 0,
+      "pace": -1,
+      "offRtg": null,
+      "defRtg": null,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 25.581395348837212,
+      "orbPct": 32.608695652173914,
       "ftFga": null
     },
     "awayAdvanced": {
-      "pace": 3.5,
-      "offRtg": 0,
-      "defRtg": 0,
+      "pace": -1,
+      "offRtg": null,
+      "defRtg": null,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 20.408163265306122,
+      "orbPct": 34.21052631578947,
       "ftFga": null
     }
-  },
-  {
-    "gameId": "401871337",
-    "date": "2026-05-14T00:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "8",
-      "name": "Detroit Pistons",
-      "abbreviation": "DET",
-      "score": "0",
-      "record": "60-22"
-    },
-    "awayTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
-      "score": "0",
-      "record": "52-30"
-    },
-    "venue": "Little Caesars Arena",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0
   }
 ]
