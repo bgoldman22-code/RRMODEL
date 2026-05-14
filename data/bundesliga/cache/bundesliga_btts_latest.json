@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-13T22:31:10.745126+00:00",
+  "generated_at": "2026-05-14T10:53:56.022256+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -282,18 +282,18 @@
       },
       "market_odds": {
         "btts_yes": 1.53,
-        "btts_no": 2.36,
+        "btts_no": 2.37,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6066838046272494,
-      "edge": -0.09536403449187159,
+      "market_probability": 0.6076923076923076,
+      "edge": -0.09637253755692987,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-9.5%, need 5%)"
+        "min_edge (edge=-9.6%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
