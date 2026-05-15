@@ -1,56 +1,47 @@
 [
   {
-    "gameId": "401871337",
-    "date": "2026-05-14T00:00Z",
-    "status": "STATUS_FINAL",
+    "gameId": "401871338",
+    "date": "2026-05-15T23:00Z",
+    "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "8",
-      "name": "Detroit Pistons",
-      "abbreviation": "DET",
-      "score": "113",
-      "record": "60-22"
-    },
-    "awayTeam": {
       "id": "5",
       "name": "Cleveland Cavaliers",
       "abbreviation": "CLE",
-      "score": "117",
+      "score": "0",
       "record": "52-30"
     },
-    "venue": "Little Caesars Arena",
-    "attendance": 20062,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 40,
-      "offRebounds": 15,
-      "defRebounds": 25,
-      "assists": 28,
-      "steals": 10,
-      "blocks": 10,
-      "turnovers": 10,
-      "fouls": 26
+    "awayTeam": {
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "0",
+      "record": "60-22"
     },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 44,
-      "offRebounds": 13,
-      "defRebounds": 31,
-      "assists": 25,
-      "steals": 6,
-      "blocks": 9,
-      "turnovers": 16,
-      "fouls": 16
+    "venue": "Rocket Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401871157",
+    "date": "2026-05-16T01:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "16",
+      "name": "Minnesota Timberwolves",
+      "abbreviation": "MIN",
+      "score": "0",
+      "record": "49-33"
     },
+    "awayTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "62-20"
+    },
+    "venue": "Target Center",
+    "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   }
