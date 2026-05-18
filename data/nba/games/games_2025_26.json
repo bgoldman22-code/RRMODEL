@@ -2,22 +2,77 @@
   {
     "gameId": "401871339",
     "date": "2026-05-18T00:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "8",
       "name": "Detroit Pistons",
       "abbreviation": "DET",
-      "score": "0",
+      "score": "94",
       "record": "60-22"
     },
     "awayTeam": {
       "id": "5",
       "name": "Cleveland Cavaliers",
       "abbreviation": "CLE",
-      "score": "0",
+      "score": "125",
       "record": "52-30"
     },
     "venue": "Little Caesars Arena",
+    "attendance": 20062,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 41,
+      "offRebounds": 10,
+      "defRebounds": 31,
+      "assists": 21,
+      "steals": 7,
+      "blocks": 5,
+      "turnovers": 14,
+      "fouls": 31
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 50,
+      "offRebounds": 14,
+      "defRebounds": 36,
+      "assists": 31,
+      "steals": 10,
+      "blocks": 4,
+      "turnovers": 11,
+      "fouls": 22
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401873197",
+    "date": "2026-05-19T00:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "0",
+      "record": "64-18"
+    },
+    "awayTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "62-20"
+    },
+    "venue": "Paycom Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
