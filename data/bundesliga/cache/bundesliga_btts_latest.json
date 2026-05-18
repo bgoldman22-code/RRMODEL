@@ -1,11 +1,49 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-17T22:21:56.366165+00:00",
+  "generated_at": "2026-05-18T11:27:40.237988+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
-  "total_predictions": 0,
+  "total_predictions": 1,
   "recommended_bets": 0,
-  "predictions": [],
+  "predictions": [
+    {
+      "home_team": "VfL Wolfsburg",
+      "away_team": "SC Paderborn",
+      "commence_time": "2026-05-21T18:30:00Z",
+      "model_probability": 0.42889955783891054,
+      "dixon_coles_prob": 0.6165637893576225,
+      "xgboost_prob": 0.374,
+      "expected_home_goals": 1.9340491066323833,
+      "expected_away_goals": 1.25,
+      "key_features": {
+        "combined_form_btts_rate": 0.45,
+        "home_form_btts_rate": 0.4,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.2058823529411764,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.78,
+        "btts_no": 2.04,
+        "bookmaker": "pinnacle"
+      },
+      "market_probability": 0.5340314136125655,
+      "edge": -0.10513185577365491,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-10.5%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    }
+  ],
   "bets": [],
   "league": "Bundesliga",
   "source": "Bundesliga BTTS Ensemble v1.0",
