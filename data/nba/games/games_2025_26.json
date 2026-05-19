@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401871339",
-    "date": "2026-05-18T00:00Z",
+    "gameId": "401873197",
+    "date": "2026-05-19T00:30Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "8",
-      "name": "Detroit Pistons",
-      "abbreviation": "DET",
-      "score": "94",
-      "record": "60-22"
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "115",
+      "record": "64-18"
     },
     "awayTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
-      "score": "125",
-      "record": "52-30"
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "122",
+      "record": "62-20"
     },
-    "venue": "Little Caesars Arena",
-    "attendance": 20062,
+    "venue": "Paycom Center",
+    "attendance": 18203,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 41,
-      "offRebounds": 10,
+      "rebounds": 40,
+      "offRebounds": 9,
       "defRebounds": 31,
-      "assists": 21,
-      "steals": 7,
-      "blocks": 5,
+      "assists": 25,
+      "steals": 14,
+      "blocks": 8,
       "turnovers": 14,
-      "fouls": 31
+      "fouls": 26
     },
     "awayStats": {
       "fgm": 0,
@@ -42,37 +42,37 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 50,
-      "offRebounds": 14,
-      "defRebounds": 36,
-      "assists": 31,
-      "steals": 10,
-      "blocks": 4,
-      "turnovers": 11,
-      "fouls": 22
+      "rebounds": 61,
+      "offRebounds": 15,
+      "defRebounds": 46,
+      "assists": 25,
+      "steals": 11,
+      "blocks": 7,
+      "turnovers": 21,
+      "fouls": 19
     },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
-    "gameId": "401873197",
-    "date": "2026-05-19T00:30Z",
+    "gameId": "401873341",
+    "date": "2026-05-20T00:00Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "25",
-      "name": "Oklahoma City Thunder",
-      "abbreviation": "OKC",
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
       "score": "0",
-      "record": "64-18"
+      "record": "53-29"
     },
     "awayTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
       "score": "0",
-      "record": "62-20"
+      "record": "52-30"
     },
-    "venue": "Paycom Center",
+    "venue": "Madison Square Garden",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
