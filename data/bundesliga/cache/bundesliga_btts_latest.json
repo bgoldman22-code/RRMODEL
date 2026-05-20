@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-20T11:09:07.291310+00:00",
+  "generated_at": "2026-05-20T22:35:11.656313+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 1,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.81,
-        "btts_no": 2.03,
+        "btts_yes": 1.79,
+        "btts_no": 2.06,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.5286458333333333,
-      "edge": -0.09974627549442272,
+      "market_probability": 0.5350649350649351,
+      "edge": -0.1061653772260246,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-10.0%, need 5%)"
+        "min_edge (edge=-10.6%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
