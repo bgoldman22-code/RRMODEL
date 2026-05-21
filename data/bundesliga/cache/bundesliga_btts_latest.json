@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-05-20T22:35:11.656313+00:00",
+  "generated_at": "2026-05-21T11:12:16.002742+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 1,
@@ -11,7 +11,7 @@
       "away_team": "SC Paderborn",
       "commence_time": "2026-05-21T18:30:00Z",
       "model_probability": 0.42889955783891054,
-      "dixon_coles_prob": 0.6165637893576225,
+      "dixon_coles_prob": 0.6165637893576226,
       "xgboost_prob": 0.374,
       "expected_home_goals": 1.9340491066323833,
       "expected_away_goals": 1.25,
@@ -24,18 +24,18 @@
       },
       "market_odds": {
         "btts_yes": 1.79,
-        "btts_no": 2.06,
+        "btts_no": 2.11,
         "bookmaker": "pinnacle"
       },
-      "market_probability": 0.5350649350649351,
-      "edge": -0.1061653772260246,
+      "market_probability": 0.541025641025641,
+      "edge": -0.11212608318673045,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-10.6%, need 5%)"
+        "min_edge (edge=-11.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
