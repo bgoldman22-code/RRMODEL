@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401873198",
-    "date": "2026-05-21T00:30Z",
+    "gameId": "401873342",
+    "date": "2026-05-22T00:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "25",
-      "name": "Oklahoma City Thunder",
-      "abbreviation": "OKC",
-      "score": "122",
-      "record": "64-18"
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "109",
+      "record": "53-29"
     },
     "awayTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "113",
-      "record": "62-20"
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "93",
+      "record": "52-30"
     },
-    "venue": "Paycom Center",
-    "attendance": 18203,
+    "venue": "Madison Square Garden",
+    "attendance": 19812,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 41,
-      "offRebounds": 17,
-      "defRebounds": 24,
-      "assists": 34,
-      "steals": 14,
-      "blocks": 3,
-      "turnovers": 9,
-      "fouls": 21
+      "rebounds": 40,
+      "offRebounds": 5,
+      "defRebounds": 35,
+      "assists": 32,
+      "steals": 5,
+      "blocks": 5,
+      "turnovers": 6,
+      "fouls": 22
     },
     "awayStats": {
       "fgm": 0,
@@ -42,62 +42,62 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 45,
-      "offRebounds": 16,
+      "rebounds": 42,
+      "offRebounds": 13,
       "defRebounds": 29,
-      "assists": 22,
-      "steals": 5,
-      "blocks": 6,
-      "turnovers": 21,
-      "fouls": 21
+      "assists": 15,
+      "steals": 4,
+      "blocks": 5,
+      "turnovers": 8,
+      "fouls": 20
     },
     "highAltitude": false,
     "altitudeAdjustment": 0,
-    "gamePace": -1.5,
-    "homePossessions": -1.5,
-    "awayPossessions": -1.5,
+    "gamePace": -2,
+    "homePossessions": -2,
+    "awayPossessions": -2,
     "homeAdvanced": {
-      "pace": -1.5,
+      "pace": -2,
       "offRtg": null,
       "defRtg": null,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 36.95652173913043,
+      "orbPct": 14.705882352941178,
       "ftFga": null
     },
     "awayAdvanced": {
-      "pace": -1.5,
+      "pace": -2,
       "offRtg": null,
       "defRtg": null,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 40,
+      "orbPct": 27.083333333333332,
       "ftFga": null
     }
   },
   {
-    "gameId": "401873342",
-    "date": "2026-05-22T00:00Z",
+    "gameId": "401873199",
+    "date": "2026-05-23T00:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "18",
-      "name": "New York Knicks",
-      "abbreviation": "NY",
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
       "score": "0",
-      "record": "53-29"
+      "record": "62-20"
     },
     "awayTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
       "score": "0",
-      "record": "52-30"
+      "record": "64-18"
     },
-    "venue": "Madison Square Garden",
+    "venue": "Frost Bank Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
