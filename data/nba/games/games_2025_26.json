@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401873200",
-    "date": "2026-05-25T00:00Z",
+    "gameId": "401873344",
+    "date": "2026-05-26T00:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "103",
-      "record": "62-20"
+      "id": "5",
+      "name": "Cleveland Cavaliers",
+      "abbreviation": "CLE",
+      "score": "93",
+      "record": "52-30"
     },
     "awayTeam": {
-      "id": "25",
-      "name": "Oklahoma City Thunder",
-      "abbreviation": "OKC",
-      "score": "82",
-      "record": "64-18"
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "130",
+      "record": "53-29"
     },
-    "venue": "Frost Bank Center",
-    "attendance": 19405,
+    "venue": "Rocket Arena",
+    "attendance": 19432,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 52,
-      "offRebounds": 14,
-      "defRebounds": 38,
-      "assists": 25,
-      "steals": 11,
-      "blocks": 10,
-      "turnovers": 12,
-      "fouls": 20
+      "rebounds": 33,
+      "offRebounds": 6,
+      "defRebounds": 27,
+      "assists": 21,
+      "steals": 9,
+      "blocks": 4,
+      "turnovers": 22,
+      "fouls": 18
     },
     "awayStats": {
       "fgm": 0,
@@ -42,37 +42,37 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 47,
-      "offRebounds": 11,
-      "defRebounds": 36,
-      "assists": 22,
-      "steals": 9,
-      "blocks": 5,
-      "turnovers": 17,
-      "fouls": 25
+      "rebounds": 60,
+      "offRebounds": 20,
+      "defRebounds": 40,
+      "assists": 33,
+      "steals": 15,
+      "blocks": 2,
+      "turnovers": 13,
+      "fouls": 20
     },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
-    "gameId": "401873344",
-    "date": "2026-05-26T00:00Z",
+    "gameId": "401873201",
+    "date": "2026-05-27T00:30Z",
     "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
       "score": "0",
-      "record": "52-30"
+      "record": "64-18"
     },
     "awayTeam": {
-      "id": "18",
-      "name": "New York Knicks",
-      "abbreviation": "NY",
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
       "score": "0",
-      "record": "53-29"
+      "record": "62-20"
     },
-    "venue": "Rocket Arena",
+    "venue": "Paycom Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
