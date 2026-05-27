@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401873344",
-    "date": "2026-05-26T00:00Z",
+    "gameId": "401873201",
+    "date": "2026-05-27T00:30Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "5",
-      "name": "Cleveland Cavaliers",
-      "abbreviation": "CLE",
-      "score": "93",
-      "record": "52-30"
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "127",
+      "record": "64-18"
     },
     "awayTeam": {
-      "id": "18",
-      "name": "New York Knicks",
-      "abbreviation": "NY",
-      "score": "130",
-      "record": "53-29"
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "114",
+      "record": "62-20"
     },
-    "venue": "Rocket Arena",
-    "attendance": 19432,
+    "venue": "Paycom Center",
+    "attendance": 18203,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 33,
-      "offRebounds": 6,
-      "defRebounds": 27,
-      "assists": 21,
+      "rebounds": 48,
+      "offRebounds": 14,
+      "defRebounds": 34,
+      "assists": 26,
       "steals": 9,
-      "blocks": 4,
-      "turnovers": 22,
-      "fouls": 18
+      "blocks": 5,
+      "turnovers": 16,
+      "fouls": 22
     },
     "awayStats": {
       "fgm": 0,
@@ -42,64 +42,41 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 60,
-      "offRebounds": 20,
-      "defRebounds": 40,
-      "assists": 33,
-      "steals": 15,
-      "blocks": 2,
-      "turnovers": 13,
-      "fouls": 20
+      "rebounds": 41,
+      "offRebounds": 15,
+      "defRebounds": 26,
+      "assists": 25,
+      "steals": 14,
+      "blocks": 3,
+      "turnovers": 15,
+      "fouls": 29
     },
     "highAltitude": false,
     "altitudeAdjustment": 0,
-    "gamePace": 4.5,
-    "homePossessions": 4.5,
-    "awayPossessions": 4.5,
+    "gamePace": 1,
+    "homePossessions": 1,
+    "awayPossessions": 1,
     "homeAdvanced": {
-      "pace": 4.5,
+      "pace": 1,
       "offRtg": 0,
       "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 13.043478260869565,
+      "orbPct": 35,
       "ftFga": null
     },
     "awayAdvanced": {
-      "pace": 4.5,
+      "pace": 1,
       "offRtg": 0,
       "defRtg": 0,
       "netRtg": null,
       "efg": null,
       "ts": null,
       "tovPct": 100,
-      "orbPct": 42.5531914893617,
+      "orbPct": 30.612244897959183,
       "ftFga": null
     }
-  },
-  {
-    "gameId": "401873201",
-    "date": "2026-05-27T00:30Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "25",
-      "name": "Oklahoma City Thunder",
-      "abbreviation": "OKC",
-      "score": "0",
-      "record": "64-18"
-    },
-    "awayTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "0",
-      "record": "62-20"
-    },
-    "venue": "Paycom Center",
-    "attendance": 0,
-    "highAltitude": false,
-    "altitudeAdjustment": 0
   }
 ]
