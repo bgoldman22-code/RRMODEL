@@ -1,82 +1,25 @@
 [
   {
-    "gameId": "401873201",
-    "date": "2026-05-27T00:30Z",
-    "status": "STATUS_FINAL",
+    "gameId": "401873202",
+    "date": "2026-05-29T00:30Z",
+    "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "25",
-      "name": "Oklahoma City Thunder",
-      "abbreviation": "OKC",
-      "score": "127",
-      "record": "64-18"
-    },
-    "awayTeam": {
       "id": "24",
       "name": "San Antonio Spurs",
       "abbreviation": "SA",
-      "score": "114",
+      "score": "0",
       "record": "62-20"
     },
-    "venue": "Paycom Center",
-    "attendance": 18203,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 48,
-      "offRebounds": 14,
-      "defRebounds": 34,
-      "assists": 26,
-      "steals": 9,
-      "blocks": 5,
-      "turnovers": 16,
-      "fouls": 22
+    "awayTeam": {
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "0",
+      "record": "64-18"
     },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 41,
-      "offRebounds": 15,
-      "defRebounds": 26,
-      "assists": 25,
-      "steals": 14,
-      "blocks": 3,
-      "turnovers": 15,
-      "fouls": 29
-    },
+    "venue": "Frost Bank Center",
+    "attendance": 0,
     "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 1,
-    "homePossessions": 1,
-    "awayPossessions": 1,
-    "homeAdvanced": {
-      "pace": 1,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 35,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 1,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 30.612244897959183,
-      "ftFga": null
-    }
+    "altitudeAdjustment": 0
   }
 ]
