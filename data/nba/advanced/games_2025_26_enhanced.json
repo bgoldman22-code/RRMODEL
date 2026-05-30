@@ -1,82 +1,25 @@
 [
   {
-    "gameId": "401873202",
-    "date": "2026-05-29T00:30Z",
-    "status": "STATUS_FINAL",
+    "gameId": "401873203",
+    "date": "2026-05-31T00:00Z",
+    "status": "STATUS_SCHEDULED",
     "homeTeam": {
-      "id": "24",
-      "name": "San Antonio Spurs",
-      "abbreviation": "SA",
-      "score": "118",
-      "record": "62-20"
-    },
-    "awayTeam": {
       "id": "25",
       "name": "Oklahoma City Thunder",
       "abbreviation": "OKC",
-      "score": "91",
+      "score": "0",
       "record": "64-18"
     },
-    "venue": "Frost Bank Center",
-    "attendance": 19066,
-    "homeStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 52,
-      "offRebounds": 11,
-      "defRebounds": 41,
-      "assists": 30,
-      "steals": 7,
-      "blocks": 7,
-      "turnovers": 12,
-      "fouls": 14
+    "awayTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "62-20"
     },
-    "awayStats": {
-      "fgm": 0,
-      "fga": 0,
-      "fg3m": 0,
-      "fg3a": 0,
-      "ftm": 0,
-      "fta": 0,
-      "rebounds": 42,
-      "offRebounds": 12,
-      "defRebounds": 30,
-      "assists": 22,
-      "steals": 9,
-      "blocks": 3,
-      "turnovers": 12,
-      "fouls": 21
-    },
+    "venue": "Paycom Center",
+    "attendance": 0,
     "highAltitude": false,
-    "altitudeAdjustment": 0,
-    "gamePace": 0.5,
-    "homePossessions": 0.5,
-    "awayPossessions": 0.5,
-    "homeAdvanced": {
-      "pace": 0.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 26.82926829268293,
-      "ftFga": null
-    },
-    "awayAdvanced": {
-      "pace": 0.5,
-      "offRtg": 0,
-      "defRtg": 0,
-      "netRtg": null,
-      "efg": null,
-      "ts": null,
-      "tovPct": 100,
-      "orbPct": 22.641509433962266,
-      "ftFga": null
-    }
+    "altitudeAdjustment": 0
   }
 ]
