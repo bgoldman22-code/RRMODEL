@@ -2,23 +2,55 @@
   {
     "gameId": "401859963",
     "date": "2026-06-04T00:30Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "24",
       "name": "San Antonio Spurs",
       "abbreviation": "SA",
-      "score": "0",
+      "score": "95",
       "record": "62-20"
     },
     "awayTeam": {
       "id": "18",
       "name": "New York Knicks",
       "abbreviation": "NY",
-      "score": "0",
+      "score": "105",
       "record": "53-29"
     },
     "venue": "Frost Bank Center",
-    "attendance": 0,
+    "attendance": 18835,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 54,
+      "offRebounds": 14,
+      "defRebounds": 40,
+      "assists": 16,
+      "steals": 4,
+      "blocks": 4,
+      "turnovers": 13,
+      "fouls": 23
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 49,
+      "offRebounds": 10,
+      "defRebounds": 39,
+      "assists": 20,
+      "steals": 8,
+      "blocks": 4,
+      "turnovers": 8,
+      "fouls": 23
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   }
