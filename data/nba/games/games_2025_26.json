@@ -2,23 +2,55 @@
   {
     "gameId": "401859966",
     "date": "2026-06-11T00:30Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "18",
       "name": "New York Knicks",
       "abbreviation": "NY",
-      "score": "0",
+      "score": "107",
       "record": "53-29"
     },
     "awayTeam": {
       "id": "24",
       "name": "San Antonio Spurs",
       "abbreviation": "SA",
-      "score": "0",
+      "score": "106",
       "record": "62-20"
     },
     "venue": "Madison Square Garden",
-    "attendance": 0,
+    "attendance": 19812,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 39,
+      "offRebounds": 8,
+      "defRebounds": 31,
+      "assists": 23,
+      "steals": 6,
+      "blocks": 4,
+      "turnovers": 13,
+      "fouls": 21
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 42,
+      "offRebounds": 12,
+      "defRebounds": 30,
+      "assists": 24,
+      "steals": 10,
+      "blocks": 4,
+      "turnovers": 11,
+      "fouls": 21
+    },
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   }
