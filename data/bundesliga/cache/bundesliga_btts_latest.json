@@ -1,12 +1,452 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-07-02T22:26:03.942904+00:00",
+  "generated_at": "2026-07-03T12:12:02.884650+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
-  "total_predictions": 0,
-  "recommended_bets": 0,
-  "predictions": [],
-  "bets": [],
+  "total_predictions": 9,
+  "recommended_bets": 3,
+  "predictions": [
+    {
+      "home_team": "Bayern Munich",
+      "away_team": "VfB Stuttgart",
+      "commence_time": "2026-08-28T18:30:00Z",
+      "model_probability": 0.7119409113509061,
+      "dixon_coles_prob": 0.9305113782840511,
+      "xgboost_prob": 0.648,
+      "expected_home_goals": 3.8680982132647674,
+      "expected_away_goals": 3.0000000000000004,
+      "key_features": {
+        "combined_form_btts_rate": 0.7,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.6,
+        "home_season_avg_goals_for": 2.764705882352941,
+        "away_season_avg_goals_against": 1.1470588235294117
+      },
+      "market_odds": {
+        "btts_yes": 1.48,
+        "btts_no": 2.5,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.6281407035175879,
+      "edge": 0.08380020783331821,
+      "expected_value": 0.05662176204953933,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "MEDIUM"
+      }
+    },
+    {
+      "home_team": "1. FC Köln",
+      "away_team": "TSG Hoffenheim",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.6680447548220843,
+      "dixon_coles_prob": 0.8186038010419097,
+      "xgboost_prob": 0.624,
+      "expected_home_goals": 2.210341836151295,
+      "expected_away_goals": 2.5,
+      "key_features": {
+        "combined_form_btts_rate": 0.7,
+        "home_form_btts_rate": 0.6,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 0.8235294117647058,
+        "away_season_avg_goals_against": 1.9411764705882353
+      },
+      "market_odds": {
+        "btts_yes": 1.43,
+        "btts_no": 2.66,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.6503667481662593,
+      "edge": 0.017678006655824974,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=1.8%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Augsburg",
+      "away_team": "FC Schalke 04",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.4898068256955115,
+      "dixon_coles_prob": 0.7079189450122486,
+      "xgboost_prob": 0.426,
+      "expected_home_goals": 2.026146683138687,
+      "expected_away_goals": 1.6666666666666667,
+      "key_features": {
+        "combined_form_btts_rate": 0.55,
+        "home_form_btts_rate": 0.6,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.4705882352941178,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.5,
+        "btts_no": 2.45,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.6202531645569621,
+      "edge": -0.13044633886145063,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-13.0%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Elversberg",
+      "away_team": "Bayer Leverkusen",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.48274520481923533,
+      "dixon_coles_prob": 0.49896583119319754,
+      "xgboost_prob": 0.478,
+      "expected_home_goals": 0.7367806120504318,
+      "expected_away_goals": 3.0000000000000004,
+      "key_features": {
+        "combined_form_btts_rate": 0.65,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 0.7058823529411765
+      },
+      "market_odds": {
+        "btts_yes": 1.58,
+        "btts_no": 2.26,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5885416666666665,
+      "edge": -0.10579646184743119,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-10.6%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "Borussia Dortmund",
+      "away_team": "Hamburger SV",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.47642727195466184,
+      "dixon_coles_prob": 0.29329856865090387,
+      "xgboost_prob": 0.53,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 0.5,
+      "key_features": {
+        "combined_form_btts_rate": 0.55,
+        "home_form_btts_rate": 0.6,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 2.0,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.84,
+        "btts_no": 1.88,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5053763440860215,
+      "edge": -0.028949072131359666,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-2.9%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "RB Leipzig",
+      "away_team": "Borussia Monchengladbach",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.7216465101428888,
+      "dixon_coles_prob": 0.5221756353026505,
+      "xgboost_prob": 0.78,
+      "expected_home_goals": 1.6577563771134711,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.8,
+        "home_form_btts_rate": 1.0,
+        "away_form_btts_rate": 0.6,
+        "home_season_avg_goals_for": 2.264705882352941,
+        "away_season_avg_goals_against": 1.9705882352941178
+      },
+      "market_odds": {
+        "btts_yes": 1.59,
+        "btts_no": 2.24,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5848563968668407,
+      "edge": 0.13679011327604818,
+      "expected_value": 0.0860315177836781,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "HIGH"
+      }
+    },
+    {
+      "home_team": "Union Berlin",
+      "away_team": "Eintracht Frankfurt",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.5226836295303681,
+      "dixon_coles_prob": 0.4976739373627465,
+      "xgboost_prob": 0.53,
+      "expected_home_goals": 2.210341836151295,
+      "expected_away_goals": 0.8,
+      "key_features": {
+        "combined_form_btts_rate": 0.75,
+        "home_form_btts_rate": 0.5,
+        "away_form_btts_rate": 1.0,
+        "home_season_avg_goals_for": 1.5,
+        "away_season_avg_goals_against": 1.4705882352941178
+      },
+      "market_odds": {
+        "btts_yes": 1.58,
+        "btts_no": 2.26,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5885416666666665,
+      "edge": -0.06585803713629845,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-6.6%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "FSV Mainz 05",
+      "away_team": "SC Paderborn",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.4737094591957994,
+      "dixon_coles_prob": 0.4590430197103924,
+      "xgboost_prob": 0.478,
+      "expected_home_goals": 0.947289358350555,
+      "expected_away_goals": 1.2857142857142858,
+      "key_features": {
+        "combined_form_btts_rate": 0.65,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.5,
+        "home_season_avg_goals_for": 1.1470588235294117,
+        "away_season_avg_goals_against": 1.5
+      },
+      "market_odds": {
+        "btts_yes": 1.71,
+        "btts_no": 2.04,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5439999999999999,
+      "edge": -0.07029054080420055,
+      "expected_value": null,
+      "gates_passed": [
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [
+        "min_edge (edge=-7.0%, need 5%)"
+      ],
+      "bet_decision": {
+        "should_bet": false,
+        "recommended_stake_pct": 0.0,
+        "confidence": "LOW"
+      }
+    },
+    {
+      "home_team": "SC Freiburg",
+      "away_team": "Werder Bremen",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.6554152113929553,
+      "dixon_coles_prob": 0.5850498261880088,
+      "xgboost_prob": 0.676,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 2.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.8,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 1.3235294117647058,
+        "away_season_avg_goals_against": 1.588235294117647
+      },
+      "market_odds": {
+        "btts_yes": 1.63,
+        "btts_no": 2.17,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5710526315789474,
+      "edge": 0.08436257981400797,
+      "expected_value": 0.05175618393497421,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "MEDIUM"
+      }
+    }
+  ],
+  "bets": [
+    {
+      "home_team": "Bayern Munich",
+      "away_team": "VfB Stuttgart",
+      "commence_time": "2026-08-28T18:30:00Z",
+      "model_probability": 0.7119409113509061,
+      "dixon_coles_prob": 0.9305113782840511,
+      "xgboost_prob": 0.648,
+      "expected_home_goals": 3.8680982132647674,
+      "expected_away_goals": 3.0000000000000004,
+      "key_features": {
+        "combined_form_btts_rate": 0.7,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.6,
+        "home_season_avg_goals_for": 2.764705882352941,
+        "away_season_avg_goals_against": 1.1470588235294117
+      },
+      "market_odds": {
+        "btts_yes": 1.48,
+        "btts_no": 2.5,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.6281407035175879,
+      "edge": 0.08380020783331821,
+      "expected_value": 0.05662176204953933,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "MEDIUM"
+      }
+    },
+    {
+      "home_team": "RB Leipzig",
+      "away_team": "Borussia Monchengladbach",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.7216465101428888,
+      "dixon_coles_prob": 0.5221756353026505,
+      "xgboost_prob": 0.78,
+      "expected_home_goals": 1.6577563771134711,
+      "expected_away_goals": 1.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.8,
+        "home_form_btts_rate": 1.0,
+        "away_form_btts_rate": 0.6,
+        "home_season_avg_goals_for": 2.264705882352941,
+        "away_season_avg_goals_against": 1.9705882352941178
+      },
+      "market_odds": {
+        "btts_yes": 1.59,
+        "btts_no": 2.24,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5848563968668407,
+      "edge": 0.13679011327604818,
+      "expected_value": 0.0860315177836781,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "HIGH"
+      }
+    },
+    {
+      "home_team": "SC Freiburg",
+      "away_team": "Werder Bremen",
+      "commence_time": "2026-08-29T13:30:00Z",
+      "model_probability": 0.6554152113929553,
+      "dixon_coles_prob": 0.5850498261880088,
+      "xgboost_prob": 0.676,
+      "expected_home_goals": 1.1051709180756477,
+      "expected_away_goals": 2.0,
+      "key_features": {
+        "combined_form_btts_rate": 0.8,
+        "home_form_btts_rate": 0.8,
+        "away_form_btts_rate": 0.8,
+        "home_season_avg_goals_for": 1.3235294117647058,
+        "away_season_avg_goals_against": 1.588235294117647
+      },
+      "market_odds": {
+        "btts_yes": 1.63,
+        "btts_no": 2.17,
+        "bookmaker": "onexbet"
+      },
+      "market_probability": 0.5710526315789474,
+      "edge": 0.08436257981400797,
+      "expected_value": 0.05175618393497421,
+      "gates_passed": [
+        "min_edge",
+        "max_ev_cap",
+        "min_odds"
+      ],
+      "gates_failed": [],
+      "bet_decision": {
+        "should_bet": true,
+        "recommended_stake_pct": 3.0,
+        "confidence": "MEDIUM"
+      }
+    }
+  ],
   "league": "Bundesliga",
   "source": "Bundesliga BTTS Ensemble v1.0",
   "cache_version": "1.0",
