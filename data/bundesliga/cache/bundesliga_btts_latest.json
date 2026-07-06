@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-07-06T13:51:02.044343+00:00",
+  "generated_at": "2026-07-06T23:09:51.448138+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -23,13 +23,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.62,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.645320197044335,
-      "edge": 0.06662071430657113,
-      "expected_value": 0.04626438493511884,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.07512499095289626,
+      "expected_value": 0.051455473255408404,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -39,7 +39,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "LOW"
+        "confidence": "MEDIUM"
       }
     },
     {
@@ -355,13 +355,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.62,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.645320197044335,
-      "edge": 0.06662071430657113,
-      "expected_value": 0.04626438493511884,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.07512499095289626,
+      "expected_value": 0.051455473255408404,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -371,7 +371,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "LOW"
+        "confidence": "MEDIUM"
       }
     },
     {
