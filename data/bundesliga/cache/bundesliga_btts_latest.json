@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-07-07T23:03:11.811381+00:00",
+  "generated_at": "2026-07-08T11:49:45.020888+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -280,19 +280,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.66,
-        "btts_no": 2.12,
+        "btts_yes": 1.65,
+        "btts_no": 2.13,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5608465608465608,
-      "edge": -0.08713710165076144,
+      "market_probability": 0.5634920634920635,
+      "edge": -0.08978260429626411,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-8.7%, need 5%)"
+        "min_edge (edge=-9.0%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
