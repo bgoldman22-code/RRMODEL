@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-07-21T22:58:38.801686+00:00",
+  "generated_at": "2026-07-22T11:50:46.100652+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 11,
@@ -49,7 +49,7 @@
       "model_probability": 0.6680447548220843,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.624,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.7,
@@ -176,7 +176,7 @@
       "model_probability": 0.5226836295303681,
       "dixon_coles_prob": 0.4976739373627465,
       "xgboost_prob": 0.53,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 0.8,
       "key_features": {
         "combined_form_btts_rate": 0.75,
@@ -211,7 +211,7 @@
       "away_team": "SC Paderborn",
       "commence_time": "2026-08-29T13:30:00Z",
       "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103923,
+      "dixon_coles_prob": 0.4590430197103924,
       "xgboost_prob": 0.478,
       "expected_home_goals": 0.947289358350555,
       "expected_away_goals": 1.2857142857142858,
@@ -277,19 +277,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.78,
-        "btts_no": 1.95,
+        "btts_yes": 1.79,
+        "btts_no": 1.94,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5227882037533512,
-      "edge": -0.046360931798689387,
+      "market_probability": 0.520107238605898,
+      "edge": -0.04367996665123619,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-4.6%, need 5%)"
+        "min_edge (edge=-4.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -314,13 +314,13 @@
         "away_season_avg_goals_against": 1.588235294117647
       },
       "market_odds": {
-        "btts_yes": 1.65,
-        "btts_no": 2.13,
+        "btts_yes": 1.6,
+        "btts_no": 2.22,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5634920634920635,
-      "edge": 0.09192314790089184,
-      "expected_value": 0.055710998727813245,
+      "market_probability": 0.5811518324607331,
+      "edge": 0.07426337893222223,
+      "expected_value": 0.0464146118326389,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -350,19 +350,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.53,
-        "btts_no": 2.37,
+        "btts_yes": 1.49,
+        "btts_no": 2.48,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6076923076923076,
-      "edge": -0.11788548199679616,
+      "market_probability": 0.6246851385390428,
+      "edge": -0.13487831284353136,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-11.8%, need 5%)"
+        "min_edge (edge=-13.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -461,13 +461,13 @@
         "away_season_avg_goals_against": 1.588235294117647
       },
       "market_odds": {
-        "btts_yes": 1.65,
-        "btts_no": 2.13,
+        "btts_yes": 1.6,
+        "btts_no": 2.22,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5634920634920635,
-      "edge": 0.09192314790089184,
-      "expected_value": 0.055710998727813245,
+      "market_probability": 0.5811518324607331,
+      "edge": 0.07426337893222223,
+      "expected_value": 0.0464146118326389,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
