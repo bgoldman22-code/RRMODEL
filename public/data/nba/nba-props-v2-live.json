@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T19:38:16.440Z",
+  "generated_at": "2026-08-16T12:10:25.331Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -7,12 +7,85 @@
     "points_prob_min": 0.57,
     "rebounds_prob_min": 0.535
   },
-  "picks": [],
+  "picks": [
+    {
+      "player": "Jalen Brunson",
+      "team": "New York Knicks",
+      "opponent": "Philadelphia 76ers",
+      "propType": "rebounds",
+      "prediction": 0.7097982845658964,
+      "modelProbability": 0.7097982845658964,
+      "vegasLine": 2.5,
+      "betSide": "OVER",
+      "edge": 7.476178821553148,
+      "confidence": 71,
+      "odds": -174,
+      "book": "FanDuel",
+      "game": "Philadelphia 76ers @ New York Knicks",
+      "gameTime": "2026-10-20T23:00:00Z",
+      "model": "rebounds_lightgbm",
+      "threshold": 0.535,
+      "kellyStake": 6,
+      "kellyFraction": 0.20484729971055626,
+      "modelVersion": "rebounds_v2",
+      "hitRates": {
+        "L5_hitRate": 100,
+        "L5_avg": 4.2,
+        "L5_games": 5,
+        "L10_hitRate": 90,
+        "L10_avg": 3.8,
+        "L10_games": 10,
+        "L20_hitRate": 70,
+        "L20_avg": 3.1,
+        "L20_games": 20
+      },
+      "L5_over_pct": 1,
+      "L10_over_pct": 0.9,
+      "L5_sample_size": 5,
+      "L10_sample_size": 10
+    },
+    {
+      "player": "Shai Gilgeous-Alexander",
+      "team": "Oklahoma City Thunder",
+      "opponent": "San Antonio Spurs",
+      "propType": "points",
+      "prediction": 0.635884704641901,
+      "modelProbability": 0.635884704641901,
+      "vegasLine": 29.5,
+      "betSide": "OVER",
+      "edge": 8.032914908634547,
+      "confidence": 64,
+      "odds": -125,
+      "book": "FanDuel",
+      "game": "Oklahoma City Thunder @ San Antonio Spurs",
+      "gameTime": "2026-10-21T01:30:00Z",
+      "model": "points_lightgbm",
+      "threshold": 0.57,
+      "kellyStake": 6,
+      "kellyFraction": 0.1807405854442774,
+      "modelVersion": "points_v1",
+      "hitRates": {
+        "L5_hitRate": 40,
+        "L5_avg": 25.4,
+        "L5_games": 5,
+        "L10_hitRate": 40,
+        "L10_avg": 26.1,
+        "L10_games": 10,
+        "L20_hitRate": 40,
+        "L20_avg": 27.7,
+        "L20_games": 20
+      },
+      "L5_over_pct": 0.4,
+      "L10_over_pct": 0.4,
+      "L5_sample_size": 5,
+      "L10_sample_size": 10
+    }
+  ],
   "stats": {
-    "total_picks": 0,
+    "total_picks": 2,
     "by_market": {
-      "points": 0,
-      "rebounds": 0,
+      "points": 1,
+      "rebounds": 1,
       "assists": 0
     },
     "errors": 0
