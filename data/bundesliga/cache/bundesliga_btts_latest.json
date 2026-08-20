@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-08-19T22:07:44.366854+00:00",
+  "generated_at": "2026-08-20T10:11:36.958084+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 9,
@@ -23,13 +23,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.61,
+        "btts_yes": 1.45,
+        "btts_no": 2.59,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6444444444444445,
-      "edge": 0.0674964669064616,
-      "expected_value": 0.04687254646282056,
+      "market_probability": 0.641089108910891,
+      "edge": 0.0708518024400151,
+      "expected_value": 0.04886331202759662,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -39,7 +39,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "LOW"
+        "confidence": "MEDIUM"
       }
     },
     {
@@ -49,7 +49,7 @@
       "model_probability": 0.6680447548220843,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.624,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.7,
@@ -97,18 +97,18 @@
       },
       "market_odds": {
         "btts_yes": 1.53,
-        "btts_no": 2.36,
+        "btts_no": 2.37,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6066838046272494,
-      "edge": -0.12393859980801403,
+      "market_probability": 0.6076923076923076,
+      "edge": -0.12494710287307231,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-12.4%, need 5%)"
+        "min_edge (edge=-12.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -159,7 +159,7 @@
       "model_probability": 0.5226836295303681,
       "dixon_coles_prob": 0.4976739373627465,
       "xgboost_prob": 0.53,
-      "expected_home_goals": 2.210341836151295,
+      "expected_home_goals": 2.2103418361512954,
       "expected_away_goals": 0.8,
       "key_features": {
         "combined_form_btts_rate": 0.75,
@@ -170,18 +170,18 @@
       },
       "market_odds": {
         "btts_yes": 1.53,
-        "btts_no": 2.36,
+        "btts_no": 2.37,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6066838046272494,
-      "edge": -0.08400017509688129,
+      "market_probability": 0.6076923076923076,
+      "edge": -0.08500867816193958,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-8.4%, need 5%)"
+        "min_edge (edge=-8.5%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -194,7 +194,7 @@
       "away_team": "SC Paderborn",
       "commence_time": "2026-08-29T13:30:00Z",
       "model_probability": 0.4737094591957994,
-      "dixon_coles_prob": 0.4590430197103924,
+      "dixon_coles_prob": 0.4590430197103923,
       "xgboost_prob": 0.478,
       "expected_home_goals": 0.947289358350555,
       "expected_away_goals": 1.2857142857142858,
@@ -355,13 +355,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.61,
+        "btts_yes": 1.45,
+        "btts_no": 2.59,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6444444444444445,
-      "edge": 0.0674964669064616,
-      "expected_value": 0.04687254646282056,
+      "market_probability": 0.641089108910891,
+      "edge": 0.0708518024400151,
+      "expected_value": 0.04886331202759662,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -371,7 +371,7 @@
       "bet_decision": {
         "should_bet": true,
         "recommended_stake_pct": 3.0,
-        "confidence": "LOW"
+        "confidence": "MEDIUM"
       }
     },
     {
