@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-08-27T13:35:14.915747+00:00",
+  "generated_at": "2026-08-28T00:56:07.639474+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,13 +23,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.47,
-        "btts_no": 2.53,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6325,
-      "edge": 0.07944091135090614,
-      "expected_value": 0.05404143629313343,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.07512499095289626,
+      "expected_value": 0.051455473255408404,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -612,18 +612,18 @@
       },
       "market_odds": {
         "btts_yes": 1.53,
-        "btts_no": 2.37,
+        "btts_no": 2.36,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6076923076923076,
-      "edge": -0.11701062302615539,
+      "market_probability": 0.6066838046272494,
+      "edge": -0.1160021199610971,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-11.7%, need 5%)"
+        "min_edge (edge=-11.6%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -686,13 +686,13 @@
         "away_season_avg_goals_against": 1.1470588235294117
       },
       "market_odds": {
-        "btts_yes": 1.47,
-        "btts_no": 2.53,
+        "btts_yes": 1.46,
+        "btts_no": 2.56,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6325,
-      "edge": 0.07944091135090614,
-      "expected_value": 0.05404143629313343,
+      "market_probability": 0.6368159203980098,
+      "edge": 0.07512499095289626,
+      "expected_value": 0.051455473255408404,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
