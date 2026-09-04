@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T19:35:41.297Z",
+  "generated_at": "2026-09-04T12:27:21.530Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -8,6 +8,42 @@
     "rebounds_prob_min": 0.535
   },
   "picks": [
+    {
+      "player": "Jayson Tatum",
+      "team": "Boston Celtics",
+      "opponent": "Detroit Pistons",
+      "propType": "rebounds",
+      "prediction": 0.5661619322904624,
+      "modelProbability": 0.5661619322904624,
+      "vegasLine": 8.5,
+      "betSide": "OVER",
+      "edge": 0.09445409861146281,
+      "confidence": 57,
+      "odds": -130,
+      "book": "Fanatics",
+      "game": "Boston Celtics @ Detroit Pistons",
+      "gameTime": "2026-10-20T19:00:00Z",
+      "model": "rebounds_lightgbm",
+      "threshold": 0.535,
+      "kellyStake": 0.9,
+      "kellyFraction": 0.0021724442680635114,
+      "modelVersion": "rebounds_v2",
+      "hitRates": {
+        "L5_hitRate": 60,
+        "L5_avg": 10.6,
+        "L5_games": 5,
+        "L10_hitRate": 70,
+        "L10_avg": 10.6,
+        "L10_games": 10,
+        "L20_hitRate": 70,
+        "L20_avg": 10.4,
+        "L20_games": 20
+      },
+      "L5_over_pct": 0.6,
+      "L10_over_pct": 0.7,
+      "L5_sample_size": 5,
+      "L10_sample_size": 10
+    },
     {
       "player": "Jalen Brunson",
       "team": "New York Knicks",
@@ -82,10 +118,10 @@
     }
   ],
   "stats": {
-    "total_picks": 2,
+    "total_picks": 3,
     "by_market": {
       "points": 1,
-      "rebounds": 1,
+      "rebounds": 2,
       "assists": 0
     },
     "errors": 0
