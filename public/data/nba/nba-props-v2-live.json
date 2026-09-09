@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T12:27:15.452Z",
+  "generated_at": "2026-09-09T19:35:27.894Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -53,16 +53,16 @@
       "modelProbability": 0.7097982845658964,
       "vegasLine": 2.5,
       "betSide": "OVER",
-      "edge": 7.476178821553148,
+      "edge": 7.744534338942588,
       "confidence": 71,
-      "odds": -174,
+      "odds": -172,
       "book": "FanDuel",
       "game": "Philadelphia 76ers @ New York Knicks",
       "gameTime": "2026-10-20T23:00:00Z",
       "model": "rebounds_lightgbm",
       "threshold": 0.535,
       "kellyStake": 6,
-      "kellyFraction": 0.20484729971055626,
+      "kellyFraction": 0.21065133401923847,
       "modelVersion": "rebounds_v2",
       "hitRates": {
         "L5_hitRate": 100,
