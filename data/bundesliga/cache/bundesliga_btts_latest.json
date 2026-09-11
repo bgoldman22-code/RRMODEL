@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-09-10T22:11:35.512111+00:00",
+  "generated_at": "2026-09-11T10:17:04.299736+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,19 +23,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.51,
-        "btts_no": 2.42,
+        "btts_yes": 1.5,
+        "btts_no": 2.45,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6157760814249365,
-      "edge": -0.2374286398576953,
+      "market_probability": 0.6202531645569621,
+      "edge": -0.24190572298972096,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-23.7%, need 5%)"
+        "min_edge (edge=-24.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -171,19 +171,19 @@
         "away_season_avg_goals_against": 1.4705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.45,
-        "btts_no": 2.59,
+        "btts_yes": 1.43,
+        "btts_no": 2.66,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.641089108910891,
-      "edge": -0.014380087304361688,
+      "market_probability": 0.6503667481662593,
+      "edge": -0.023657726559729975,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-1.4%, need 5%)"
+        "min_edge (edge=-2.4%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -245,19 +245,19 @@
         "away_season_avg_goals_against": 1.588235294117647
       },
       "market_odds": {
-        "btts_yes": 1.46,
-        "btts_no": 2.56,
+        "btts_yes": 1.47,
+        "btts_no": 2.53,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6368159203980098,
-      "edge": -0.021631528554899027,
+      "market_probability": 0.6325,
+      "edge": -0.01731560815688915,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-2.2%, need 5%)"
+        "min_edge (edge=-1.7%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -457,7 +457,7 @@
       "dixon_coles_prob": 0.2993324575137704,
       "xgboost_prob": 0.648,
       "expected_home_goals": 0.9472893583505552,
-      "expected_away_goals": 0.5714285714285713,
+      "expected_away_goals": 0.5714285714285714,
       "key_features": {
         "combined_form_btts_rate": 0.7,
         "home_form_btts_rate": 0.6,
@@ -527,7 +527,7 @@
       "away_team": "Borussia Dortmund",
       "commence_time": "2026-09-19T16:30:00Z",
       "model_probability": 0.6007255387550718,
-      "dixon_coles_prob": 0.6168789402375495,
+      "dixon_coles_prob": 0.6168789402375496,
       "xgboost_prob": 0.5960000000000001,
       "expected_home_goals": 1.6577563771134718,
       "expected_away_goals": 1.4,
@@ -640,7 +640,7 @@
       "model_probability": 0.6169825607780507,
       "dixon_coles_prob": 0.8186038010419097,
       "xgboost_prob": 0.558,
-      "expected_home_goals": 2.2103418361512954,
+      "expected_home_goals": 2.210341836151295,
       "expected_away_goals": 2.5,
       "key_features": {
         "combined_form_btts_rate": 0.65,
