@@ -1,6 +1,6 @@
 {
   "model": "Bundesliga BTTS Ensemble v1.0",
-  "generated_at": "2026-09-17T22:12:46.916172+00:00",
+  "generated_at": "2026-09-18T10:16:42.465991+00:00",
   "validation_roi": 0.212,
   "hit_rate": 0.806,
   "total_predictions": 18,
@@ -23,13 +23,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.76,
-        "btts_no": 1.97,
+        "btts_yes": 1.86,
+        "btts_no": 1.86,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5281501340482575,
-      "edge": 0.056953269183468436,
-      "expected_value": 0.032359812036061614,
+      "market_probability": 0.5,
+      "edge": 0.08510340323172594,
+      "expected_value": 0.045754517866519316,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -38,8 +38,8 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 1.8734628020877775,
-        "confidence": "LOW"
+        "recommended_stake_pct": 2.473936140457149,
+        "confidence": "MEDIUM"
       }
     },
     {
@@ -133,19 +133,19 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.44,
-        "btts_no": 2.62,
+        "btts_yes": 1.45,
+        "btts_no": 2.59,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.645320197044335,
-      "edge": -0.07623425905650161,
+      "market_probability": 0.641089108910891,
+      "edge": -0.07200317092305764,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-7.6%, need 5%)"
+        "min_edge (edge=-7.2%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -207,19 +207,19 @@
         "away_season_avg_goals_against": 1.2647058823529411
       },
       "market_odds": {
-        "btts_yes": 1.35,
-        "btts_no": 2.98,
+        "btts_yes": 1.34,
+        "btts_no": 3.04,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6882217090069285,
-      "edge": -0.08749617025185663,
+      "market_probability": 0.6940639269406392,
+      "edge": -0.09333838818556739,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap"
       ],
       "gates_failed": [
-        "min_edge (edge=-8.7%, need 5%)",
-        "min_odds (odds=1.35, min 1.40)"
+        "min_edge (edge=-9.3%, need 5%)",
+        "min_odds (odds=1.34, min 1.40)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -612,19 +612,19 @@
         "away_season_avg_goals_against": 1.9705882352941178
       },
       "market_odds": {
-        "btts_yes": 1.47,
-        "btts_no": 2.53,
+        "btts_yes": 1.48,
+        "btts_no": 2.5,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.6325,
-      "edge": -0.12420271136190897,
+      "market_probability": 0.6281407035175879,
+      "edge": -0.1198434148794969,
       "expected_value": null,
       "gates_passed": [
         "max_ev_cap",
         "min_odds"
       ],
       "gates_failed": [
-        "min_edge (edge=-12.4%, need 5%)"
+        "min_edge (edge=-12.0%, need 5%)"
       ],
       "bet_decision": {
         "should_bet": false,
@@ -688,13 +688,13 @@
         "away_season_avg_goals_against": 1.5
       },
       "market_odds": {
-        "btts_yes": 1.76,
-        "btts_no": 1.97,
+        "btts_yes": 1.86,
+        "btts_no": 1.86,
         "bookmaker": "onexbet"
       },
-      "market_probability": 0.5281501340482575,
-      "edge": 0.056953269183468436,
-      "expected_value": 0.032359812036061614,
+      "market_probability": 0.5,
+      "edge": 0.08510340323172594,
+      "expected_value": 0.045754517866519316,
       "gates_passed": [
         "min_edge",
         "max_ev_cap",
@@ -703,8 +703,8 @@
       "gates_failed": [],
       "bet_decision": {
         "should_bet": true,
-        "recommended_stake_pct": 1.8734628020877775,
-        "confidence": "LOW"
+        "recommended_stake_pct": 2.473936140457149,
+        "confidence": "MEDIUM"
       }
     },
     {
