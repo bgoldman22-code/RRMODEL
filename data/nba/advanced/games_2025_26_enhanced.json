@@ -2,22 +2,125 @@
   {
     "gameId": "401902644",
     "date": "2026-10-03T23:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "28",
       "name": "Toronto Raptors",
       "abbreviation": "TOR",
-      "score": "0",
-      "record": "0-0"
+      "score": "105",
+      "record": "0-1"
     },
     "awayTeam": {
       "id": "14",
       "name": "Miami Heat",
       "abbreviation": "MIA",
+      "score": "129",
+      "record": "1-0"
+    },
+    "venue": "Videotron Centre",
+    "attendance": 18474,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 43,
+      "offRebounds": 13,
+      "defRebounds": 30,
+      "assists": 25,
+      "steals": 17,
+      "blocks": 2,
+      "turnovers": 19,
+      "fouls": 30
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 55,
+      "offRebounds": 10,
+      "defRebounds": 45,
+      "assists": 31,
+      "steals": 9,
+      "blocks": 7,
+      "turnovers": 25,
+      "fouls": 24
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0,
+    "gamePace": 10.5,
+    "homePossessions": 10.5,
+    "awayPossessions": 10.5,
+    "homeAdvanced": {
+      "pace": 10.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 22.413793103448278,
+      "ftFga": null
+    },
+    "awayAdvanced": {
+      "pace": 10.5,
+      "offRtg": 0,
+      "defRtg": 0,
+      "netRtg": null,
+      "efg": null,
+      "ts": null,
+      "tovPct": 100,
+      "orbPct": 25,
+      "ftFga": null
+    }
+  },
+  {
+    "gameId": "401914127",
+    "date": "2026-10-04T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
       "score": "0",
       "record": "0-0"
     },
-    "venue": "Videotron Centre",
+    "awayTeam": {
+      "id": "26",
+      "name": "Utah Jazz",
+      "abbreviation": "UTAH",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "CU Events Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0
+  },
+  {
+    "gameId": "401918010",
+    "date": "2026-10-04T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "12",
+      "name": "LA Clippers",
+      "abbreviation": "LAC",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "9",
+      "name": "Golden State Warriors",
+      "abbreviation": "GS",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Stan Sheriff Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0
