@@ -1,24 +1,24 @@
 [
   {
-    "gameId": "401902644",
-    "date": "2026-10-03T23:00Z",
+    "gameId": "401914127",
+    "date": "2026-10-04T23:00Z",
     "status": "STATUS_FINAL",
     "homeTeam": {
-      "id": "28",
-      "name": "Toronto Raptors",
-      "abbreviation": "TOR",
-      "score": "105",
+      "id": "7",
+      "name": "Denver Nuggets",
+      "abbreviation": "DEN",
+      "score": "97",
       "record": "0-1"
     },
     "awayTeam": {
-      "id": "14",
-      "name": "Miami Heat",
-      "abbreviation": "MIA",
-      "score": "129",
+      "id": "26",
+      "name": "Utah Jazz",
+      "abbreviation": "UTAH",
+      "score": "109",
       "record": "1-0"
     },
-    "venue": "Videotron Centre",
-    "attendance": 18474,
+    "venue": "CU Events Center",
+    "attendance": 7860,
     "homeStats": {
       "fgm": 0,
       "fga": 0,
@@ -26,14 +26,14 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 43,
-      "offRebounds": 13,
-      "defRebounds": 30,
-      "assists": 25,
-      "steals": 17,
-      "blocks": 2,
-      "turnovers": 19,
-      "fouls": 30
+      "rebounds": 47,
+      "offRebounds": 12,
+      "defRebounds": 35,
+      "assists": 27,
+      "steals": 4,
+      "blocks": 8,
+      "turnovers": 11,
+      "fouls": 23
     },
     "awayStats": {
       "fgm": 0,
@@ -42,60 +42,184 @@
       "fg3a": 0,
       "ftm": 0,
       "fta": 0,
-      "rebounds": 55,
-      "offRebounds": 10,
-      "defRebounds": 45,
-      "assists": 31,
-      "steals": 9,
-      "blocks": 7,
-      "turnovers": 25,
-      "fouls": 24
+      "rebounds": 54,
+      "offRebounds": 14,
+      "defRebounds": 40,
+      "assists": 28,
+      "steals": 4,
+      "blocks": 5,
+      "turnovers": 10,
+      "fouls": 25
     },
-    "highAltitude": false,
-    "altitudeAdjustment": 0.0
-  },
-  {
-    "gameId": "401914127",
-    "date": "2026-10-04T23:00Z",
-    "status": "STATUS_SCHEDULED",
-    "homeTeam": {
-      "id": "7",
-      "name": "Denver Nuggets",
-      "abbreviation": "DEN",
-      "score": "0",
-      "record": "0-0"
-    },
-    "awayTeam": {
-      "id": "26",
-      "name": "Utah Jazz",
-      "abbreviation": "UTAH",
-      "score": "0",
-      "record": "0-0"
-    },
-    "venue": "CU Events Center",
-    "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
   },
   {
     "gameId": "401918010",
     "date": "2026-10-04T23:00Z",
-    "status": "STATUS_SCHEDULED",
+    "status": "STATUS_FINAL",
     "homeTeam": {
       "id": "12",
       "name": "LA Clippers",
       "abbreviation": "LAC",
-      "score": "0",
-      "record": "0-0"
+      "score": "104",
+      "record": "1-0"
     },
     "awayTeam": {
       "id": "9",
       "name": "Golden State Warriors",
       "abbreviation": "GS",
+      "score": "101",
+      "record": "0-1"
+    },
+    "venue": "Stan Sheriff Center",
+    "attendance": 10112,
+    "homeStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 52,
+      "offRebounds": 10,
+      "defRebounds": 42,
+      "assists": 18,
+      "steals": 4,
+      "blocks": 7,
+      "turnovers": 21,
+      "fouls": 24
+    },
+    "awayStats": {
+      "fgm": 0,
+      "fga": 0,
+      "fg3m": 0,
+      "fg3a": 0,
+      "ftm": 0,
+      "fta": 0,
+      "rebounds": 49,
+      "offRebounds": 13,
+      "defRebounds": 36,
+      "assists": 23,
+      "steals": 15,
+      "blocks": 4,
+      "turnovers": 16,
+      "fouls": 30
+    },
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401898388",
+    "date": "2026-10-05T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "1",
+      "name": "Atlanta Hawks",
+      "abbreviation": "ATL",
       "score": "0",
       "record": "0-0"
     },
-    "venue": "Stan Sheriff Center",
+    "awayTeam": {
+      "id": "29",
+      "name": "Memphis Grizzlies",
+      "abbreviation": "MEM",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "State Farm Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401908947",
+    "date": "2026-10-05T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "21",
+      "name": "Phoenix Suns",
+      "abbreviation": "PHX",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Little Caesars Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401914101",
+    "date": "2026-10-05T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "20",
+      "name": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Xfinity Mobile Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401914102",
+    "date": "2026-10-06T00:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "15",
+      "name": "Milwaukee Bucks",
+      "abbreviation": "MIL",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "16",
+      "name": "Minnesota Timberwolves",
+      "abbreviation": "MIN",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Fiserv Forum",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401898716",
+    "date": "2026-10-06T02:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "23",
+      "name": "Sacramento Kings",
+      "abbreviation": "SAC",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "13",
+      "name": "Los Angeles Lakers",
+      "abbreviation": "LAL",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Golden 1 Center",
     "attendance": 0,
     "highAltitude": false,
     "altitudeAdjustment": 0.0
