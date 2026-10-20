@@ -1,1 +1,71 @@
-[]
+[
+  {
+    "gameId": "401909088",
+    "date": "2026-10-20T19:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "8",
+      "name": "Detroit Pistons",
+      "abbreviation": "DET",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "2",
+      "name": "Boston Celtics",
+      "abbreviation": "BOS",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Little Caesars Arena",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401909089",
+    "date": "2026-10-20T23:00Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "18",
+      "name": "New York Knicks",
+      "abbreviation": "NY",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "20",
+      "name": "Philadelphia 76ers",
+      "abbreviation": "PHI",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Madison Square Garden",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  },
+  {
+    "gameId": "401909090",
+    "date": "2026-10-21T01:30Z",
+    "status": "STATUS_SCHEDULED",
+    "homeTeam": {
+      "id": "24",
+      "name": "San Antonio Spurs",
+      "abbreviation": "SA",
+      "score": "0",
+      "record": "0-0"
+    },
+    "awayTeam": {
+      "id": "25",
+      "name": "Oklahoma City Thunder",
+      "abbreviation": "OKC",
+      "score": "0",
+      "record": "0-0"
+    },
+    "venue": "Frost Bank Center",
+    "attendance": 0,
+    "highAltitude": false,
+    "altitudeAdjustment": 0.0
+  }
+]
