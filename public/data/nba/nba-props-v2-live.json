@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T12:32:24.757Z",
+  "generated_at": "2026-10-25T19:45:36.392Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -157,11 +157,11 @@
       "team": "Indiana Pacers",
       "opponent": "Milwaukee Bucks",
       "propType": "assists",
-      "prediction": 0.541429755713611,
-      "modelProbability": 0.541429755713611,
+      "prediction": 0.5435585227532382,
+      "modelProbability": 0.5435585227532382,
       "vegasLine": 3.5,
       "betSide": "OVER",
-      "edge": 11.589784081999394,
+      "edge": 11.802660785962122,
       "confidence": 54,
       "odds": 135,
       "book": "draftkings",
@@ -170,7 +170,7 @@
       "model": "assists_logistic_pra",
       "threshold": 0.534,
       "kellyStake": 6,
-      "kellyFraction": 0.20174809327924875,
+      "kellyFraction": 0.205453724792674,
       "modelVersion": "assists_logistic",
       "hitRates": {
         "L5_hitRate": 40,
