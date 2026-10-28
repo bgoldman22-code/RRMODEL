@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T12:27:12.363Z",
+  "generated_at": "2026-10-28T19:45:19.369Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -1269,42 +1269,6 @@
       "L10_sample_size": 10
     },
     {
-      "player": "De'Andre Hunter",
-      "team": "Miami Heat",
-      "opponent": "Cleveland Cavaliers",
-      "propType": "rebounds",
-      "prediction": 0.6555448293079777,
-      "modelProbability": 0.6555448293079777,
-      "vegasLine": 2.5,
-      "betSide": "OVER",
-      "edge": 3.148467893203788,
-      "confidence": 66,
-      "odds": -166,
-      "book": "draftkings",
-      "game": "Miami Heat @ Cleveland Cavaliers",
-      "gameTime": "2025-04-23T23:40:00Z",
-      "model": "rebounds_lightgbm",
-      "threshold": 0.535,
-      "kellyStake": 6,
-      "kellyFraction": 0.08374924595922073,
-      "modelVersion": "rebounds_v2",
-      "hitRates": {
-        "L5_hitRate": 80,
-        "L5_avg": 4.8,
-        "L5_games": 5,
-        "L10_hitRate": 60,
-        "L10_avg": 3.4,
-        "L10_games": 10,
-        "L20_hitRate": 65,
-        "L20_avg": 3.5,
-        "L20_games": 20
-      },
-      "L5_over_pct": 0.8,
-      "L10_over_pct": 0.6,
-      "L5_sample_size": 5,
-      "L10_sample_size": 10
-    },
-    {
       "player": "Davion Mitchell",
       "team": "Miami Heat",
       "opponent": "Cleveland Cavaliers",
@@ -2278,10 +2242,10 @@
     }
   ],
   "stats": {
-    "total_picks": 63,
+    "total_picks": 62,
     "by_market": {
       "points": 19,
-      "rebounds": 28,
+      "rebounds": 27,
       "assists": 16
     },
     "errors": 0
