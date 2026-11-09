@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-09T12:27:15.399Z",
+  "generated_at": "2026-11-09T19:40:31.851Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -1345,11 +1345,11 @@
       "team": "Houston Rockets",
       "opponent": "Golden State Warriors",
       "propType": "assists",
-      "prediction": 0.563289254143854,
-      "modelProbability": 0.563289254143854,
+      "prediction": 0.5630467729374725,
+      "modelProbability": 0.5630467729374725,
       "vegasLine": 4.5,
       "betSide": "OVER",
-      "edge": 6.328925414385401,
+      "edge": 6.304677293747252,
       "confidence": 56,
       "odds": 100,
       "book": "draftkings",
@@ -1358,7 +1358,7 @@
       "model": "assists_logistic_pra",
       "threshold": 0.534,
       "kellyStake": 6,
-      "kellyFraction": 0.126578508287708,
+      "kellyFraction": 0.12609354587494503,
       "modelVersion": "assists_logistic",
       "hitRates": {
         "L5_hitRate": 20,
