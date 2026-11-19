@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T12:26:28.800Z",
+  "generated_at": "2026-11-19T19:45:10.042Z",
   "model_version": "nba_phase3.5_mixed_logistic_lgbm_v1_20251125",
   "source": "Phase 3.5: Logistic PRA + LightGBM per-market",
   "filters": {
@@ -498,10 +498,10 @@
       "modelVersion": "rebounds_v2",
       "hitRates": {
         "L5_hitRate": 100,
-        "L5_avg": 5.4,
+        "L5_avg": 5.6,
         "L5_games": 5,
         "L10_hitRate": 80,
-        "L10_avg": 7,
+        "L10_avg": 7.1,
         "L10_games": 10,
         "L20_hitRate": 90,
         "L20_avg": 6.2,
